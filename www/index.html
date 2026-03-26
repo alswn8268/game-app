@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Tap Timing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #080812;
+      --surface: #0f0f1e;
+      --primary: #00e5ff;
+      --primary-glow: rgba(0,229,255,0.3);
+      --success: #00ff88;
+      --danger: #ff2d55;
+      --warning: #ffd60a;
+      --text: #e8e8ff;
+      --muted: #44445a;
+      --ring-max: 280px;
+      --target: 110px;
+    }
+
+    * {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      user-select: none;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 배경 그리드 */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* 배경 빛 번짐 효과 */
+    body::after {
+      content: '';
+      position: fixed;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(0,229,255,0.06) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── 화면 관리 ── */
+    .screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      z-index: 10;
+      padding-bottom: 70px; /* 광고 영역 높이만큼 */
+    }
+    .screen.active { display: flex; }
+
+    /* ── 메뉴 화면 ── */
+    #screen-menu { gap: 28px; }
+
+    .logo-wrap { text-align: center; }
+    .logo-sub {
+      font-size: 11px;
+      letter-spacing: 6px;
+      color: var(--primary);
+      opacity: 0.7;
+      margin-bottom: 10px;
+    }
+    .logo {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(36px, 10vw, 60px);
+      font-weight: 900;
+      letter-spacing: 2px;
+      line-height: 1;
+      background: linear-gradient(160deg, #fff 0%, var(--primary) 60%, var(--success) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 30px var(--primary-glow));
+    }
+
+    .menu-desc {
+      text-align: center;
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 2;
+      letter-spacing: 0.5px;
+    }
+    .menu-desc span { color: var(--success); }
+
+    .best-wrap {
+      text-align: center;
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: var(--muted);
+    }
+    .best-wrap strong {
+      font-family: 'Orbitron', monospace;
+      font-size: 18px;
+      color: var(--primary);
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* ── 버튼 ── */
+    .btn {
+      font-family: 'Orbitron', monospace;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      padding: 18px 52px;
+      border: 1.5px solid var(--primary);
+      background: transparent;
+      color: var(--primary);
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--primary);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .btn:active { transform: scale(0.95); }
+    .btn:active::after { opacity: 0.12; }
+
+    .btn-sm {
+      font-family: 'Orbitron', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 13px 32px;
+      border: 1.5px solid var(--muted);
+      background: transparent;
+      color: var(--muted);
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-sm:active { transform: scale(0.95); opacity: 0.7; }
+
+    /* ── 게임 화면 ── */
+    #screen-game { gap: 0; justify-content: flex-start; padding-top: 0; }
+
+    .hud {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 52px 28px 24px;
+    }
+
+    .hud-block { text-align: center; }
+    .hud-label {
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .hud-val {
+      font-family: 'Orbitron', monospace;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .hearts {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+    }
+    .heart {
+      font-size: 18px;
+      transition: all 0.25s;
+      filter: drop-shadow(0 0 4px #ff2d55);
+    }
+    .heart.dead { opacity: 0.15; filter: none; }
+
+    /* 게임 아레나 */
+    .arena-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .arena {
+      position: relative;
+      width: var(--ring-max);
+      height: var(--ring-max);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 3.5px solid var(--primary);
+      box-shadow:
+        0 0 12px var(--primary),
+        0 0 24px var(--primary-glow),
+        inset 0 0 12px rgba(0,229,255,0.06);
+      transition: border-color 0.1s, box-shadow 0.1s;
+    }
+    .ring.good-zone {
+      border-color: var(--success);
+      box-shadow: 0 0 16px var(--success), 0 0 32px rgba(0,255,136,0.25);
+    }
+    .ring.perfect-zone {
+      border-color: #fff;
+      box-shadow: 0 0 20px #fff, 0 0 40px rgba(255,255,255,0.3);
+    }
+
+    .zone-ring {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .zone-good {
+      border: 1.5px dashed rgba(0,255,136,0.2);
+    }
+    .zone-perfect {
+      border: 1.5px dashed rgba(255,255,255,0.15);
+    }
+
+    .target {
+      position: absolute;
+      width: var(--target);
+      height: var(--target);
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.2);
+      background: radial-gradient(circle, rgba(0,229,255,0.05) 0%, transparent 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      cursor: pointer;
+      transition: transform 0.08s;
+    }
+    .target:active { transform: scale(0.93); }
+    .target-inner {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .target-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+    }
+
+    /* 하단 피드백 영역 */
+    .feedback-area {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 0 20px;
+      gap: 8px;
+      min-height: 90px;
+    }
+
+    .feedback {
+      font-family: 'Orbitron', monospace;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.08s, transform 0.08s;
+    }
+    .feedback.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .feedback.perfect { color: #fff; text-shadow: 0 0 20px #fff, 0 0 40px var(--success); }
+    .feedback.good    { color: var(--primary); text-shadow: 0 0 16px var(--primary); }
+    .feedback.miss    { color: var(--danger); text-shadow: 0 0 16px var(--danger); }
+    .feedback.early   { color: var(--warning); }
+
+    .combo-text {
+      font-family: 'Orbitron', monospace;
+      font-size: 12px;
+      letter-spacing: 3px;
+      color: var(--warning);
+      height: 18px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .combo-text.show { opacity: 1; }
+
+    /* ── 결과 화면 ── */
+    #screen-result { gap: 24px; }
+
+    .result-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 11px;
+      letter-spacing: 5px;
+      color: var(--muted);
+    }
+
+    .result-score {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(56px, 18vw, 88px);
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1;
+      text-shadow: 0 0 40px var(--primary), 0 0 80px var(--primary-glow);
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%;
+      max-width: 320px;
+    }
+    .result-cell {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 8px;
+      padding: 14px 8px;
+      text-align: center;
+    }
+    .result-cell-val {
+      font-family: 'Orbitron', monospace;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .result-cell-val.p { color: var(--success); }
+    .result-cell-val.g { color: var(--primary); }
+    .result-cell-val.m { color: var(--danger); }
+    .result-cell-label { font-size: 10px; letter-spacing: 2px; color: var(--muted); }
+
+    .new-best {
+      font-family: 'Orbitron', monospace;
+      font-size: 12px;
+      letter-spacing: 4px;
+      color: var(--warning);
+      padding: 8px 20px;
+      border: 1px solid rgba(255,214,10,0.3);
+      border-radius: 99px;
+    }
+
+    .result-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* ── 광고 영역 ── */
+    #ad-banner {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 60px;
+      background: rgba(255,255,255,0.02);
+      border-top: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .ad-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--muted);
+    }
+
+    /* ── 레벨업 플래시 ── */
+    .levelup-flash {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,229,255,0.08);
+      pointer-events: none;
+      opacity: 0;
+      z-index: 50;
+      transition: opacity 0.15s;
+    }
+    .levelup-flash.show { opacity: 1; }
+
+    /* ── 파티클 ── */
+    @keyframes particle {
+      0%   { transform: translate(-50%,-50%) translate(0,0) scale(1); opacity: 1; }
+      100% { transform: translate(-50%,-50%) translate(var(--px),var(--py)) scale(0); opacity: 0; }
+    }
+    .pt {
+      position: absolute;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      top: 50%; left: 50%;
+      pointer-events: none;
+      animation: particle 0.55s cubic-bezier(0.2,0,0.8,1) forwards;
+    }
+
+    /* ── 흔들기 ── */
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      15%      { transform: translateX(-10px); }
+      35%      { transform: translateX(10px); }
+      55%      { transform: translateX(-6px); }
+      75%      { transform: translateX(6px); }
+    }
+    .shaking { animation: shake 0.32s ease; }
+
+    /* ── 점수 팝 ── */
+    @keyframes scorepop {
+      0%   { transform: scale(1.6); }
+      100% { transform: scale(1); }
+    }
+    .scorepop { animation: scorepop 0.25s ease-out; }
+
+    /* ── 전면 광고 오버레이 ── */
+    #ad-interstitial {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      gap: 20px;
+    }
+    #ad-interstitial.show { display: flex; }
+    .ad-full-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--muted);
+    }
+    .ad-full-box {
+      width: 300px; height: 250px;
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+    .ad-skip-timer {
+      font-family: 'Orbitron', monospace;
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 2px;
+    }
+    .ad-skip-btn {
+      font-family: 'Orbitron', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      padding: 12px 28px;
+      border: 1px solid var(--primary);
+      background: transparent;
+      color: var(--primary);
+      border-radius: 3px;
+      cursor: pointer;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 레벨업 플래시 -->
+  <div class="levelup-flash" id="levelup-flash"></div>
+
+  <!-- 전면 광고 오버레이 (네이티브 AdMob 없을 때 웹 폴백용) -->
+  <div id="ad-interstitial">
+    <div class="ad-full-label">ADVERTISEMENT</div>
+    <div class="ad-full-box">[ AdMob 전면 광고 ]</div>
+    <div class="ad-skip-timer" id="skip-timer">5초 후 닫기 가능...</div>
+    <button class="ad-skip-btn" id="skip-btn" onclick="closeInterstitial()">닫기 ✕</button>
+  </div>
+
+  <!-- ── 메뉴 화면 ── -->
+  <div class="screen active" id="screen-menu">
+    <div class="logo-wrap">
+      <div class="logo-sub">HYPERCASUAL</div>
+      <div class="logo">TAP<br/>TIMING</div>
+    </div>
+
+    <div class="menu-desc">
+      줄어드는 링이 원 안에 들어올 때<br/>
+      <span>초록 구간</span>에서 탭하면 PERFECT!<br/>
+      콤보를 쌓아 최고 점수에 도전하세요
+    </div>
+
+    <button class="btn" onclick="startGame()">PLAY</button>
+
+    <div class="best-wrap">
+      BEST SCORE
+      <strong id="best-score">0</strong>
+    </div>
+  </div>
+
+  <!-- ── 게임 화면 ── -->
+  <div class="screen" id="screen-game">
+    <div class="hud">
+      <div class="hud-block">
+        <div class="hud-label">SCORE</div>
+        <div class="hud-val" id="hud-score">0</div>
+      </div>
+      <div class="hud-block">
+        <div class="hud-label">LIVES</div>
+        <div class="hearts" id="hud-lives">
+          <span class="heart">❤️</span>
+          <span class="heart">❤️</span>
+          <span class="heart">❤️</span>
+        </div>
+      </div>
+      <div class="hud-block">
+        <div class="hud-label">LEVEL</div>
+        <div class="hud-val" id="hud-level">1</div>
+      </div>
+    </div>
+
+    <div class="arena-wrap">
+      <div class="arena" id="arena">
+        <div class="zone-ring zone-good"   id="zone-good"></div>
+        <div class="zone-ring zone-perfect" id="zone-perfect"></div>
+        <div class="ring" id="ring"></div>
+        <div class="target" id="target">
+          <div class="target-inner">
+            <div class="target-dot"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feedback-area">
+      <div class="feedback" id="feedback"></div>
+      <div class="combo-text" id="combo-text"></div>
+    </div>
+  </div>
+
+  <!-- ── 결과 화면 ── -->
+  <div class="screen" id="screen-result">
+    <div class="result-label">GAME OVER</div>
+    <div class="result-score" id="result-score">0</div>
+
+    <div class="result-grid">
+      <div class="result-cell">
+        <div class="result-cell-val p" id="r-perfect">0</div>
+        <div class="result-cell-label">PERFECT</div>
+      </div>
+      <div class="result-cell">
+        <div class="result-cell-val g" id="r-good">0</div>
+        <div class="result-cell-label">GOOD</div>
+      </div>
+      <div class="result-cell">
+        <div class="result-cell-val m" id="r-miss">0</div>
+        <div class="result-cell-label">MISS</div>
+      </div>
+    </div>
+
+    <div class="new-best" id="new-best" style="display:none">★ NEW RECORD ★</div>
+
+    <div class="result-btns">
+      <button class="btn" onclick="startGame()">RETRY</button>
+      <button class="btn-sm" onclick="showScreen('screen-menu')">MENU</button>
+    </div>
+  </div>
+
+  <!-- ── 배너 광고 ── -->
+  <div id="ad-banner">
+    <!-- 실제 AdMob 배너: Capacitor AdMob 플러그인이 여기에 자동 삽입 -->
+    <div class="ad-label">ADVERTISEMENT</div>
+  </div>
+
+  <script type="module">
+    /* ── CONFIG ── */
+    const C = {
+      maxLives:        3,
+      tapsPerLevel:    5,
+      baseSpeed:       2200,
+      speedDecay:      0.91,
+      ringMax:         280,
+      targetR:         110,
+      perfectThresh:   18,
+      goodThresh:      38,
+      pts: { perfect: 100, good: 50 },
+      combo: [{ n:5, x:3 }, { n:3, x:2 }],
+      adEvery:         3,   // 게임오버 몇 번마다 전면 광고
+    };
+
+    /* ── 상태 ── */
+    let S = {};
+    let raf = null, t0 = null, spd = 0;
+    let deathCount = 0;
+    let tapBlocked = false;
+    let fallbackAdShowing = false; // Bug fix 3: 폴백 광고 중복 방지용
+
+    /* ── AdMob 초기화 (Capacitor) ── */
+    async function initAdMob() {
+      try {
+        const { AdMob } = await import('@capacitor-community/admob');
+        window._admob = AdMob;
+        await AdMob.initialize();
+        // 배너 표시
+        await AdMob.showBanner({
+          adId: 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX', // ← 배너 ID
+          adSize: 'BANNER',
+          position: 'BOTTOM_CENTER',
+          margin: 0,
+        });
+        // 전면 광고 미리 로드
+        await AdMob.prepareInterstitial({
+          adId: 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX', // ← 전면 ID
+        });
+      } catch {
+        // 웹 환경(테스트)에서는 무시
+      }
+    }
+
+    async function showInterstitialAd() {
+      if (window._admob) {
+        try {
+          await window._admob.showInterstitial();
+          await window._admob.prepareInterstitial({
+            adId: 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX',
+          });
+        } catch { showFallbackAd(); }
+      } else {
+        showFallbackAd();
+      }
+    }
+
+    /* 앱이 아닌 브라우저 테스트 시 폴백 광고 UI */
+    let skipInterval = null;
+    function showFallbackAd() {
+      fallbackAdShowing = true;
+      const overlay = document.getElementById('ad-interstitial');
+      const timer   = document.getElementById('skip-timer');
+      const skipBtn = document.getElementById('skip-btn');
+      overlay.classList.add('show');
+      skipBtn.style.display = 'none';
+      timer.style.display = 'block';
+      let sec = 5;
+      timer.textContent = sec + '초 후 닫기 가능...';
+      if (skipInterval) clearInterval(skipInterval);
+      skipInterval = setInterval(() => {
+        sec--;
+        if (sec <= 0) {
+          clearInterval(skipInterval);
+          timer.style.display = 'none';
+          skipBtn.style.display = 'inline-block';
+        } else {
+          timer.textContent = sec + '초 후 닫기 가능...';
+        }
+      }, 1000);
+    }
+    window.closeInterstitial = function () {
+      fallbackAdShowing = false;
+      document.getElementById('ad-interstitial').classList.remove('show');
+      document.getElementById('skip-timer').style.display = 'block';
+      showScreen('screen-result');
+    };
+
+    /* ── 게임 시작 ── */
+    function startGame() {
+      S = {
+        score: 0, lives: C.maxLives, level: 1,
+        combo: 0, tapCount: 0,
+        active: true,
+        stats: { perfect:0, good:0, miss:0 },
+      };
+      tapBlocked = false;
+      refreshHUD();
+      refreshLives();
+      hideFeedback();
+      showScreen('screen-game');
+      setTimeout(launchRing, 380);
+    }
+
+    /* ── 링 애니메이션 ── */
+    function launchRing() {
+      if (!S.active) return;
+      spd = C.baseSpeed * Math.pow(C.speedDecay, S.level - 1);
+      t0  = performance.now();
+      tapBlocked = false;
+      if (raf) cancelAnimationFrame(raf);
+      tick();
+    }
+
+    function tick() {
+      if (!S.active) return;
+      const prog = Math.min((performance.now() - t0) / spd, 1);
+      const size = C.ringMax - (C.ringMax - C.targetR) * prog;
+      const ring = document.getElementById('ring');
+      ring.style.width  = size + 'px';
+      ring.style.height = size + 'px';
+
+      // 구간에 따라 링 색 변경
+      const diff = Math.abs(size - C.targetR);
+      ring.classList.toggle('perfect-zone', diff <= C.perfectThresh);
+      ring.classList.toggle('good-zone',    diff <= C.goodThresh && diff > C.perfectThresh);
+
+      if (prog < 1) { raf = requestAnimationFrame(tick); }
+      else { if (!tapBlocked) processMiss('MISS'); }
+    }
+
+    /* ── 탭 처리 ── */
+    function onTap() {
+      if (!S.active || tapBlocked) return;
+      const ring = document.getElementById('ring');
+      const size = parseFloat(ring.style.width) || C.ringMax;
+      const diff = Math.abs(size - C.targetR);
+
+      if (diff <= C.perfectThresh)     processHit('PERFECT', C.pts.perfect);
+      else if (diff <= C.goodThresh)   processHit('GOOD',    C.pts.good);
+      else if (size > C.targetR + 60)  showEarlyMiss();
+      else                             processMiss('MISS');
+    }
+    window.onTap = onTap;
+    window.startGame = startGame; // Bug fix 1: type="module"에서 전역 노출
+
+    /* ── 초기화 ── */
+    (async () => {
+      document.getElementById('best-score').textContent = localStorage.getItem('best') || '0';
+      initZones();
+
+      // Bug fix 2: 터치와 클릭 중복 방지 — touchstart만 쓰고 클릭은 데스크탑 전용
+      const target = document.getElementById('target');
+      let lastTouch = 0;
+      target.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // 클릭 이벤트 추가 발생 차단
+        lastTouch = Date.now();
+        onTap();
+      }, { passive: false });
+      target.addEventListener('click', () => {
+        if (Date.now() - lastTouch > 300) onTap(); // 터치 후 300ms 이내 클릭은 무시
+      });
+
+      document.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); onTap(); } });
+      await initAdMob();
+    })();
+
+    /* ── 성공 ── */
+    function processHit(type, base) {
+      if (raf) cancelAnimationFrame(raf);
+      tapBlocked = true;
+
+      S.combo++;
+      S.tapCount++;
+      S.stats[type.toLowerCase()]++;
+
+      const mult  = getMultiplier();
+      S.score    += base * mult;
+      const label = type + (mult > 1 ? ' ×' + mult : '');
+      showFeedbackText(label, type.toLowerCase());
+      showCombo(S.combo);
+      animateScore();
+
+      if (type === 'PERFECT') spawnParticles();
+
+      if (S.tapCount >= C.tapsPerLevel) {
+        S.level++;
+        S.tapCount = 0;
+        document.getElementById('hud-level').textContent = S.level;
+        flashLevelUp();
+      }
+
+      refreshHUD();
+      setTimeout(launchRing, 480);
+    }
+
+    /* ── 실패 ── */
+    function processMiss(label) {
+      if (raf) cancelAnimationFrame(raf);
+      tapBlocked = true;
+      S.combo = 0;
+      S.stats.miss++;
+      S.lives--;
+      refreshLives();
+      showFeedbackText(label, 'miss');
+      showCombo(0);
+      shakeScreen();
+
+      if (S.lives <= 0) {
+        S.active = false;
+        deathCount++;
+        setTimeout(() => triggerGameOver(), 650);
+      } else {
+        setTimeout(launchRing, 680);
+      }
+    }
+
+    /* ── 게임 오버 ── */
+    async function triggerGameOver() {
+      const prev    = parseInt(localStorage.getItem('best') || '0');
+      const isNew   = S.score > prev;
+      if (isNew) localStorage.setItem('best', S.score);
+
+      document.getElementById('result-score').textContent = S.score;
+      document.getElementById('r-perfect').textContent   = S.stats.perfect;
+      document.getElementById('r-good').textContent      = S.stats.good;
+      document.getElementById('r-miss').textContent      = S.stats.miss;
+      document.getElementById('new-best').style.display  = isNew ? 'block' : 'none';
+      document.getElementById('best-score').textContent  = Math.max(S.score, prev);
+
+      if (deathCount % C.adEvery === 0) {
+        await showInterstitialAd();
+        if (fallbackAdShowing) return; // 폴백 광고가 닫힐 때 closeInterstitial()이 결과화면 처리
+      }
+      showScreen('screen-result');
+    }
+
+    /* ── 헬퍼 ── */
+    function getMultiplier() {
+      for (const { n, x } of C.combo) if (S.combo >= n) return x;
+      return 1;
+    }
+
+    function refreshHUD() {
+      document.getElementById('hud-score').textContent = S.score;
+      document.getElementById('hud-level').textContent = S.level;
+    }
+
+    function refreshLives() {
+      document.querySelectorAll('#hud-lives .heart').forEach((h, i) => {
+        h.classList.toggle('dead', i >= S.lives);
+      });
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+    window.showScreen = showScreen;
+
+    let fbTimer = null;
+    function showFeedbackText(text, cls) {
+      const el = document.getElementById('feedback');
+      el.textContent = text;
+      el.className = 'feedback ' + cls;
+      el.classList.add('show');
+      if (fbTimer) clearTimeout(fbTimer);
+      fbTimer = setTimeout(hideFeedback, 700);
+    }
+
+    function hideFeedback() {
+      const el = document.getElementById('feedback');
+      el.classList.remove('show');
+    }
+
+    function showCombo(n) {
+      const el = document.getElementById('combo-text');
+      if (n >= 3) { el.textContent = n + ' COMBO!'; el.classList.add('show'); }
+      else el.classList.remove('show');
+    }
+
+    function animateScore() {
+      const el = document.getElementById('hud-score');
+      el.classList.remove('scorepop');
+      void el.offsetWidth;
+      el.classList.add('scorepop');
+    }
+
+    function shakeScreen() {
+      const el = document.getElementById('screen-game');
+      el.classList.remove('shaking');
+      void el.offsetWidth;
+      el.classList.add('shaking');
+    }
+
+    function flashLevelUp() {
+      const el = document.getElementById('levelup-flash');
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 220);
+    }
+
+    /* 파티클 */
+    function spawnParticles() {
+      const arena  = document.getElementById('arena');
+      const colors = ['#00e5ff','#00ff88','#ffffff','#ffd60a','#a78bfa'];
+      for (let i = 0; i < 12; i++) {
+        const p     = document.createElement('div');
+        p.className = 'pt';
+        const angle = (i / 12) * Math.PI * 2;
+        const dist  = 55 + Math.random() * 50;
+        p.style.setProperty('--px', Math.cos(angle) * dist + 'px');
+        p.style.setProperty('--py', Math.sin(angle) * dist + 'px');
+        p.style.background = colors[i % colors.length];
+        arena.appendChild(p);
+        p.addEventListener('animationend', () => p.remove());
+      }
+    }
+
+    /* 판정 구간 시각화 */
+    function initZones() {
+      const g = document.getElementById('zone-good');
+      const p = document.getElementById('zone-perfect');
+      const gs = C.targetR + C.goodThresh * 2;
+      const ps = C.targetR + C.perfectThresh * 2;
+      g.style.width = g.style.height = gs + 'px';
+      p.style.width = p.style.height = ps + 'px';
+    }
+
+  </script>
+</body>
+</html>

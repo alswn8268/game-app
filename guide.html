@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Tap Timing — 완전 정복 가이드</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#09090f;
+  --card:#0f0f1c;
+  --border:rgba(255,255,255,0.07);
+  --primary:#00e5ff;
+  --green:#00ff88;
+  --yellow:#ffd60a;
+  --red:#ff3b5c;
+  --purple:#a78bfa;
+  --text:#e2e2f0;
+  --muted:#52526e;
+  --font:'Pretendard',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.6;font-size:15px}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 800px 600px at 50% 0%,rgba(0,229,255,0.04),transparent);pointer-events:none}
+
+/* 레이아웃 */
+.wrap{max-width:860px;margin:0 auto;padding:40px 20px 80px}
+
+/* 헤더 */
+.hero{text-align:center;padding:60px 0 48px;border-bottom:1px solid var(--border);margin-bottom:48px}
+.hero-badge{display:inline-block;font-size:11px;letter-spacing:3px;color:var(--primary);border:1px solid rgba(0,229,255,0.3);border-radius:99px;padding:5px 16px;margin-bottom:20px}
+.hero h1{font-size:clamp(28px,6vw,46px);font-weight:800;letter-spacing:-0.5px;line-height:1.15;margin-bottom:12px}
+.hero h1 span{background:linear-gradient(120deg,var(--primary),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);font-size:15px;max-width:520px;margin:0 auto 28px}
+.hero-stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap}
+.hstat{text-align:center}
+.hstat-n{font-size:22px;font-weight:800;color:var(--primary)}
+.hstat-l{font-size:11px;color:var(--muted);letter-spacing:1px;margin-top:2px}
+
+/* TOC */
+.toc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px 28px;margin-bottom:48px}
+.toc-title{font-size:12px;letter-spacing:3px;color:var(--muted);margin-bottom:16px}
+.toc-list{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.toc-list li a{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;text-decoration:none;color:var(--text);font-size:14px;transition:background 0.15s}
+.toc-list li a:hover{background:rgba(255,255,255,0.04)}
+.toc-list li a .step-badge{font-size:10px;font-weight:700;color:var(--primary);background:rgba(0,229,255,0.1);border-radius:4px;padding:2px 7px;flex-shrink:0}
+
+/* 섹션 */
+.section{margin-bottom:56px}
+.section-head{display:flex;align-items:flex-start;gap:16px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.step-num{font-size:11px;font-weight:700;color:var(--primary);background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.2);border-radius:6px;padding:4px 10px;white-space:nowrap;margin-top:4px}
+.section-head h2{font-size:22px;font-weight:800;letter-spacing:-0.3px}
+.section-head h2 small{display:block;font-size:13px;font-weight:500;color:var(--muted);letter-spacing:0;margin-top:3px}
+
+/* 카드 */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:12px}
+.card-title{font-size:13px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
+
+/* 코드 블록 */
+pre{background:#07070f;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:18px 20px;overflow-x:auto;margin:12px 0;font-size:13px;line-height:1.7}
+code{font-family:'Consolas','Courier New',monospace;color:#c8f7ff}
+.comment{color:var(--muted)}
+.keyword{color:var(--purple)}
+.string{color:var(--green)}
+.num{color:var(--yellow)}
+.path{color:var(--primary)}
+
+/* 인라인 코드 */
+.ic{background:rgba(0,229,255,0.08);color:var(--primary);padding:2px 7px;border-radius:4px;font-family:'Consolas',monospace;font-size:13px}
+
+/* 버그 수정 박스 */
+.bugfix-grid{display:grid;gap:10px}
+.bugfix{background:rgba(255,59,92,0.06);border:1px solid rgba(255,59,92,0.2);border-radius:10px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start}
+.bugfix-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.bugfix-body h4{font-size:14px;font-weight:700;color:var(--red);margin-bottom:4px}
+.bugfix-body p{font-size:13px;color:#c0c0d8;line-height:1.5}
+.bugfix.fixed{background:rgba(0,255,136,0.05);border-color:rgba(0,255,136,0.2)}
+.bugfix.fixed .bugfix-body h4{color:var(--green)}
+
+/* 단계 리스트 */
+.step-list{list-style:none;counter-reset:steps}
+.step-list li{counter-increment:steps;display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)}
+.step-list li:last-child{border-bottom:none}
+.step-list li::before{content:counter(steps);min-width:28px;height:28px;border-radius:50%;background:rgba(0,229,255,0.1);color:var(--primary);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-list li .step-content h4{font-size:14px;font-weight:700;margin-bottom:3px}
+.step-list li .step-content p{font-size:13px;color:var(--muted);line-height:1.5}
+
+/* 경고/팁 박스 */
+.alert{border-radius:10px;padding:14px 18px;margin:14px 0;display:flex;gap:12px;font-size:13px;line-height:1.5}
+.alert.warn{background:rgba(255,214,10,0.07);border:1px solid rgba(255,214,10,0.25);color:#e8d688}
+.alert.info{background:rgba(0,229,255,0.06);border:1px solid rgba(0,229,255,0.2);color:#a8e8f0}
+.alert.danger{background:rgba(255,59,92,0.07);border:1px solid rgba(255,59,92,0.25);color:#f0a0b0}
+.alert-icon{flex-shrink:0;font-size:16px}
+
+/* 테이블 */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+th{text-align:left;padding:10px 14px;background:rgba(255,255,255,0.03);color:var(--muted);font-weight:600;letter-spacing:0.5px;font-size:11px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td strong{color:var(--text);font-weight:600}
+
+/* 파일 트리 */
+.tree{background:#07070f;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:18px 20px;font-family:'Consolas',monospace;font-size:13px;line-height:2}
+.tree .dir{color:var(--primary)}
+.tree .file{color:var(--text)}
+.tree .note{color:var(--muted)}
+
+/* 광고 배치 다이어그램 */
+.ad-diagram{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:16px 0}
+.ad-diagram .phone{background:#111120;padding:20px;display:flex;flex-direction:column;gap:8px;max-width:280px;margin:0 auto}
+.ad-zone{border-radius:8px;padding:10px;text-align:center;font-size:12px;font-weight:600;letter-spacing:1px}
+.ad-zone.hud{background:rgba(255,255,255,0.04);color:var(--muted);border:1px dashed rgba(255,255,255,0.08)}
+.ad-zone.game{background:rgba(0,229,255,0.05);border:1px dashed rgba(0,229,255,0.2);color:var(--primary);height:130px;display:flex;align-items:center;justify-content:center}
+.ad-zone.banner{background:rgba(255,214,10,0.08);border:1px solid rgba(255,214,10,0.25);color:var(--yellow)}
+.ad-zone.result{background:rgba(0,255,136,0.05);border:1px dashed rgba(0,255,136,0.2);color:var(--green)}
+
+/* 체크리스트 */
+.checklist{list-style:none}
+.checklist li{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:14px}
+.checklist li:last-child{border-bottom:none}
+.checklist li::before{content:'☐';color:var(--primary);font-size:16px;line-height:1.3;flex-shrink:0}
+
+/* 수익 예상 */
+.revenue-bars{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.rev-row{display:flex;align-items:center;gap:12px}
+.rev-label{font-size:12px;color:var(--muted);width:90px;flex-shrink:0}
+.rev-bar-wrap{flex:1;background:rgba(255,255,255,0.04);border-radius:99px;overflow:hidden;height:8px}
+.rev-bar{height:100%;border-radius:99px}
+.rev-val{font-size:13px;font-weight:700;width:110px;flex-shrink:0;text-align:right}
+
+/* 안내 배너 */
+.guide-banner{background:linear-gradient(135deg,rgba(0,229,255,0.08),rgba(167,139,250,0.08));border:1px solid rgba(0,229,255,0.15);border-radius:14px;padding:24px 28px;margin-bottom:32px;text-align:center}
+.guide-banner h3{font-size:16px;font-weight:700;margin-bottom:6px}
+.guide-banner p{font-size:13px;color:var(--muted)}
+
+/* 반응형 */
+@media(max-width:600px){
+  .hero-stats{gap:20px}
+  .section-head{flex-direction:column;gap:8px}
+  .rev-label{width:70px}
+  .rev-val{width:80px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 헤더 -->
+  <div class="hero">
+    <div class="hero-badge">TAP TIMING — 완전 정복 가이드</div>
+    <h1>이 문서 하나로<br/><span>처음부터 출시까지</span></h1>
+    <p>환경 설정 → 코드 → 광고 연동 → 스토어 등록까지<br/>모든 단계를 순서대로 정리했습니다</p>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-n">9단계</div><div class="hstat-l">전체 진행 순서</div></div>
+      <div class="hstat"><div class="hstat-n">4개</div><div class="hstat-l">버그 수정 완료</div></div>
+      <div class="hstat"><div class="hstat-n">Windows</div><div class="hstat-l">개발 환경</div></div>
+      <div class="hstat"><div class="hstat-n">Android</div><div class="hstat-l">출시 플랫폼</div></div>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">목차</div>
+    <ul class="toc-list">
+      <li><a href="#s1"><span class="step-badge">01</span>버그 수정 내역</a></li>
+      <li><a href="#s2"><span class="step-badge">02</span>파일 구조</a></li>
+      <li><a href="#s3"><span class="step-badge">03</span>환경 설치</a></li>
+      <li><a href="#s4"><span class="step-badge">04</span>Capacitor 설정</a></li>
+      <li><a href="#s5"><span class="step-badge">05</span>AdMob 연동</a></li>
+      <li><a href="#s6"><span class="step-badge">06</span>APK 빌드</a></li>
+      <li><a href="#s7"><span class="step-badge">07</span>스토어 등록</a></li>
+      <li><a href="#s8"><span class="step-badge">08</span>업데이트 방법</a></li>
+      <li><a href="#s9"><span class="step-badge">09</span>수익 로드맵</a></li>
+    </ul>
+  </div>
+
+  <!-- 01. 버그 수정 -->
+  <div class="section" id="s1">
+    <div class="section-head">
+      <div class="step-num">STEP 01</div>
+      <h2>코드 버그 수정 내역 <small>4개 수정 완료 — index.html에 이미 반영됨</small></h2>
+    </div>
+    <div class="bugfix-grid">
+      <div class="bugfix fixed">
+        <div class="bugfix-icon">✅</div>
+        <div class="bugfix-body">
+          <h4>[치명적] startGame() 버튼 클릭 안 되는 버그</h4>
+          <p><span class="ic">type="module"</span> 스크립트는 전역 스코프에 노출되지 않아 HTML onclick에서 함수를 찾지 못함. <span class="ic">window.startGame = startGame</span> 추가로 해결.</p>
+        </div>
+      </div>
+      <div class="bugfix fixed">
+        <div class="bugfix-icon">✅</div>
+        <div class="bugfix-body">
+          <h4>[치명적] 모바일에서 탭 1번에 onTap() 2번 실행</h4>
+          <p><span class="ic">ontouchstart</span> + <span class="ic">onclick</span> 동시 등록 시 모바일은 터치 후 클릭 이벤트도 추가 발생. JS에서 <span class="ic">e.preventDefault()</span>와 300ms 타임스탬프 체크로 해결.</p>
+        </div>
+      </div>
+      <div class="bugfix fixed">
+        <div class="bugfix-icon">✅</div>
+        <div class="bugfix-body">
+          <h4>[버그] 폴백 광고 + 결과화면 동시에 열림</h4>
+          <p>네이티브 AdMob이 없을 때 폴백 광고 UI가 뜨면서 결과화면도 동시에 열리는 문제. <span class="ic">fallbackAdShowing</span> 플래그로 광고 닫을 때만 결과화면 표시하도록 수정.</p>
+        </div>
+      </div>
+      <div class="bugfix fixed">
+        <div class="bugfix-icon">✅</div>
+        <div class="bugfix-body">
+          <h4>[버그] 링 완료 직전 탭 시 processMiss() 중복 호출</h4>
+          <p>링 애니메이션이 끝나는 순간과 탭이 겹치면 MISS 처리가 2번 발생해 목숨 2개 차감. <span class="ic">if (!tapBlocked)</span> 조건 추가로 해결.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02. 파일 구조 -->
+  <div class="section" id="s2">
+    <div class="section-head">
+      <div class="step-num">STEP 02</div>
+      <h2>파일 구조 <small>이대로 폴더 만들기</small></h2>
+    </div>
+    <div class="tree">
+<span class="dir">tap-game/</span>
+├── <span class="file">package.json</span>          <span class="note">← npm 의존성 정의</span>
+├── <span class="file">capacitor.config.json</span>  <span class="note">← 앱 ID, 이름 설정</span>
+├── <span class="dir">www/</span>
+│   └── <span class="file">index.html</span>         <span class="note">← 게임 본체 (버그 수정 완료)</span>
+└── <span class="dir">android/</span>               <span class="note">← npx cap add android 후 자동 생성</span>
+    └── <span class="dir">app/release/</span>
+        └── <span class="file">app-release.aab</span> <span class="note">← 빌드 후 생성되는 스토어 업로드 파일</span>
+    </div>
+    <div class="alert warn">
+      <span class="alert-icon">⚠️</span>
+      <span><strong>www/index.html</strong>은 반드시 이 이름이어야 합니다. game.html이나 다른 이름이면 앱에서 열리지 않습니다.</span>
+    </div>
+  </div>
+
+  <!-- 03. 환경 설치 -->
+  <div class="section" id="s3">
+    <div class="section-head">
+      <div class="step-num">STEP 03</div>
+      <h2>개발 환경 설치 <small>Windows 기준 — 최초 1회</small></h2>
+    </div>
+
+    <div class="card">
+      <div class="card-title">① Node.js 설치</div>
+      <ol class="step-list">
+        <li><div class="step-content"><h4>nodejs.org 접속</h4><p>LTS 버전 (짝수 버전) 다운로드 & 설치. "Add to PATH" 체크 필수.</p></div></li>
+        <li><div class="step-content"><h4>설치 확인 (터미널에서)</h4><p><code>node -v</code> → v20.x.x 출력되면 성공</p></div></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="card-title">② Android Studio 설치</div>
+      <ol class="step-list">
+        <li><div class="step-content"><h4>developer.android.com/studio 접속</h4><p>최신 버전 다운로드. 설치 중 Android SDK, Android Virtual Device 체크.</p></div></li>
+        <li><div class="step-content"><h4>환경 변수 설정 (필수)</h4><p>내 PC → 속성 → 고급 시스템 설정 → 환경 변수</p></div></li>
+      </ol>
+<pre><code><span class="comment"># 새 시스템 변수 추가</span>
+ANDROID_HOME = C:\Users\<span class="path">사용자명</span>\AppData\Local\Android\Sdk
+
+<span class="comment"># Path에 아래 두 줄 추가</span>
+%ANDROID_HOME%\tools
+%ANDROID_HOME%\platform-tools</code></pre>
+      <div class="alert info">
+        <span class="alert-icon">ℹ️</span>
+        <span>사용자명은 본인 Windows 계정 이름. 공백 있으면 따옴표로 감싸기.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04. Capacitor 설정 -->
+  <div class="section" id="s4">
+    <div class="section-head">
+      <div class="step-num">STEP 04</div>
+      <h2>Capacitor 설정 <small>게임 폴더에서 터미널 실행</small></h2>
+    </div>
+
+    <div class="card">
+      <div class="card-title">① 의존성 설치</div>
+<pre><code><span class="comment"># tap-game 폴더에서 실행</span>
+npm install</code></pre>
+    </div>
+
+    <div class="card">
+      <div class="card-title">② capacitor.config.json 수정 (반드시 바꿀 것)</div>
+<pre><code>{
+  <span class="string">"appId"</span>: <span class="string">"com.<span class="path">홍길동</span>.taptiming"</span>,   <span class="comment">← 소문자, 점(.)으로 구분. 스토어에서 영구 고정됨</span>
+  <span class="string">"appName"</span>: <span class="string">"Tap Timing"</span>,              <span class="comment">← 스토어에 표시될 앱 이름</span>
+  <span class="string">"webDir"</span>: <span class="string">"www"</span>,
+  <span class="string">"plugins"</span>: {
+    <span class="string">"AdMob"</span>: {
+      <span class="string">"appId"</span>: {
+        <span class="string">"android"</span>: <span class="string">"ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX"</span>  <span class="comment">← AdMob 앱 ID</span>
+      }
+    }
+  }
+}</code></pre>
+      <div class="alert danger">
+        <span class="alert-icon">🚫</span>
+        <span>appId는 한번 정하면 절대 변경 불가. 신중하게 설정할 것. 예: com.kimcheolsu.taptiming</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">③ Android 프로젝트 생성 및 실행</div>
+<pre><code>npx cap add android        <span class="comment"># android/ 폴더 자동 생성</span>
+npx cap sync               <span class="comment"># www/ 파일을 android/로 복사</span>
+npx cap open android       <span class="comment"># Android Studio 열기</span></code></pre>
+      <div class="alert info">
+        <span class="alert-icon">ℹ️</span>
+        <span>코드 수정할 때마다 <code>npx cap sync</code> 실행해야 앱에 반영됩니다.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">④ 내 폰에서 테스트</div>
+      <ol class="step-list">
+        <li><div class="step-content"><h4>폰 설정 → 개발자 옵션 활성화</h4><p>빌드 번호를 7번 탭 → 개발자 옵션 활성화</p></div></li>
+        <li><div class="step-content"><h4>USB 디버깅 ON</h4><p>개발자 옵션 → USB 디버깅 켜기</p></div></li>
+        <li><div class="step-content"><h4>USB 연결 후 Android Studio에서 ▶ Run</h4><p>기기 목록에서 내 폰 선택 후 실행</p></div></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- 05. AdMob -->
+  <div class="section" id="s5">
+    <div class="section-head">
+      <div class="step-num">STEP 05</div>
+      <h2>AdMob 광고 연동 <small>수익화 핵심</small></h2>
+    </div>
+
+    <div class="card">
+      <div class="card-title">광고 3종류 배치 위치</div>
+      <div class="ad-diagram">
+        <div class="phone">
+          <div class="ad-zone hud">점수 / 목숨 / 레벨 HUD</div>
+          <div class="ad-zone game">게임 영역 (링 + 타겟)</div>
+          <div class="ad-zone result" style="font-size:11px">게임 오버 → 전면 광고 (3판마다 자동 표시)</div>
+          <div class="ad-zone banner">📢 배너 광고 — 항상 하단 고정</div>
+        </div>
+      </div>
+      <table>
+        <tr><th>종류</th><th>표시 시점</th><th>수익</th><th>설정</th></tr>
+        <tr><td><strong>배너</strong></td><td>항상 하단 고정</td><td>낮음</td><td>앱 시작 시 자동 표시</td></tr>
+        <tr><td><strong>전면</strong></td><td>게임 오버 3판마다</td><td>중간</td><td>자동 표시</td></tr>
+        <tr><td><strong>보상형</strong></td><td>계속하기 버튼 클릭</td><td>높음 ★</td><td>유저 선택</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">① admob.google.com 에서 설정</div>
+      <ol class="step-list">
+        <li><div class="step-content"><h4>앱 추가</h4><p>앱 → 앱 추가 → Android 선택 → 앱 이름: Tap Timing → 스토어에 있나요? <strong>아니요</strong></p></div></li>
+        <li><div class="step-content"><h4>앱 ID 복사</h4><p><code>ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX</code> 형식 → capacitor.config.json에 붙여넣기</p></div></li>
+        <li><div class="step-content"><h4>광고 단위 3개 만들기</h4><p>광고 단위 추가: 배너 / 전면 / 보상형 각각 생성 → 각 ID 복사</p></div></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="card-title">② index.html에서 ID 교체 (3군데)</div>
+<pre><code><span class="comment">// 배너 (앱 시작 시 자동 표시)</span>
+adId: <span class="string">'ca-app-pub-XXXX/<span class="path">배너_광고단위ID</span>'</span>
+
+<span class="comment">// 전면 (게임 오버 시 자동 표시)</span>
+adId: <span class="string">'ca-app-pub-XXXX/<span class="path">전면_광고단위ID</span>'</span>
+
+<span class="comment">// 전면 재로드 (showInterstitial 후)</span>
+adId: <span class="string">'ca-app-pub-XXXX/<span class="path">전면_광고단위ID</span>'</span></code></pre>
+    </div>
+
+    <div class="card">
+      <div class="card-title">③ 테스트 광고 ID (개발 중 반드시 사용)</div>
+      <div class="alert danger">
+        <span class="alert-icon">🚫</span>
+        <span>개발 중 실제 광고 ID 사용 시 AdMob 계정 정지 위험. 반드시 테스트 ID 사용!</span>
+      </div>
+<pre><code><span class="comment">// 테스트용 공식 ID (그대로 복붙 가능)</span>
+배너:   <span class="string">'ca-app-pub-3940256099942544/6300978111'</span>
+전면:   <span class="string">'ca-app-pub-3940256099942544/1033173712'</span>
+보상형: <span class="string">'ca-app-pub-3940256099942544/5224354917'</span></code></pre>
+      <p style="font-size:13px;color:var(--muted);margin-top:10px">스토어 제출 직전에만 실제 ID로 교체하세요.</p>
+    </div>
+  </div>
+
+  <!-- 06. APK 빌드 -->
+  <div class="section" id="s6">
+    <div class="section-head">
+      <div class="step-num">STEP 06</div>
+      <h2>APK / AAB 빌드 <small>스토어 제출용 파일 만들기</small></h2>
+    </div>
+
+    <div class="card">
+      <div class="card-title">① 서명 키 생성 (최초 1회 — 절대 분실 금지)</div>
+<pre><code>Android Studio 메뉴:
+Build → Generate Signed Bundle / APK
+→ Android App Bundle 선택 → Next
+→ Create new... 클릭
+
+Key store path: C:\Users\<span class="path">이름</span>\my-key.jks
+Password:       <span class="path">비밀번호 설정</span>
+Key alias:      my-key
+First and Last Name: <span class="path">본인 이름</span>
+Country Code:   KR
+
+→ OK → Next → Release 선택 → Finish</code></pre>
+      <div class="alert danger">
+        <span class="alert-icon">🚫</span>
+        <span><strong>my-key.jks 파일과 비밀번호를 절대 잃어버리면 안 됩니다.</strong> 업데이트 시 동일 키로 서명해야 하며, 없으면 앱을 새로 등록해야 합니다.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">② 빌드 완료 후 파일 위치</div>
+<pre><code>android/app/release/app-release.aab   <span class="comment">← 이 파일을 Play Console에 업로드</span></code></pre>
+    </div>
+
+    <div class="card">
+      <div class="card-title">③ 업데이트 빌드 시 버전 코드 올리기 (필수)</div>
+<pre><code><span class="comment"># android/app/build.gradle 파일 수정</span>
+versionCode <span class="num">2</span>        <span class="comment">← 업로드마다 1씩 증가 (1→2→3...)</span>
+versionName <span class="string">"1.1"</span>    <span class="comment">← 유저에게 보이는 버전</span></code></pre>
+    </div>
+  </div>
+
+  <!-- 07. 스토어 등록 -->
+  <div class="section" id="s7">
+    <div class="section-head">
+      <div class="step-num">STEP 07</div>
+      <h2>Play Store 등록 <small>play.google.com/console</small></h2>
+    </div>
+
+    <div class="card">
+      <div class="card-title">사전 준비물 체크리스트</div>
+      <ul class="checklist">
+        <li>Google 개발자 계정 ($25 결제 — 최초 1회)</li>
+        <li>앱 아이콘 512×512px PNG (icon.svg → cloudconvert.com에서 변환)</li>
+        <li>스크린샷 최소 2장 (1080×1920px 권장)</li>
+        <li>개인정보처리방침 URL (privacypolicygenerator.info → GitHub Pages에 올리기)</li>
+        <li>서명된 .aab 파일</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">등록 순서</div>
+      <ol class="step-list">
+        <li><div class="step-content"><h4>앱 만들기</h4><p>앱 → 앱 만들기 → 게임 선택 → 무료 → 한국어</p></div></li>
+        <li><div class="step-content"><h4>대시보드 체크리스트 완료</h4><p>앱 액세스 권한 / 광고 포함 여부 / 콘텐츠 등급 / 타겟 연령 / 개인정보처리방침 입력</p></div></li>
+        <li><div class="step-content"><h4>스토어 등록정보 작성</h4><p>앱 이름 · 짧은 설명 · 자세한 설명 · 아이콘 · 스크린샷 업로드 (store-description.txt 참고)</p></div></li>
+        <li><div class="step-content"><h4>AAB 업로드</h4><p>프로덕션 → 새 버전 만들기 → .aab 파일 업로드 → 출시 노트 작성 → 검토 제출</p></div></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <div class="card-title">콘텐츠 등급 설문 답변</div>
+      <table>
+        <tr><th>항목</th><th>답변</th></tr>
+        <tr><td>폭력성</td><td>없음</td></tr>
+        <tr><td>성적 콘텐츠</td><td>없음</td></tr>
+        <tr><td>욕설</td><td>없음</td></tr>
+        <tr><td>도박</td><td>없음</td></tr>
+        <tr><td>예상 등급</td><td><strong style="color:var(--green)">전체이용가 (Everyone)</strong></td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">검토 대기 기간</div>
+      <table>
+        <tr><th>상태</th><th>기간</th></tr>
+        <tr><td>첫 출시</td><td>7~14일</td></tr>
+        <tr><td>이후 업데이트</td><td>1~3일</td></tr>
+        <tr><td>정책 위반 수정 후 재제출</td><td>3~7일 추가</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 08. 업데이트 -->
+  <div class="section" id="s8">
+    <div class="section-head">
+      <div class="step-num">STEP 08</div>
+      <h2>업데이트 방법 <small>출시 후 반복하는 루틴</small></h2>
+    </div>
+    <div class="card">
+<pre><code><span class="comment"># 1. index.html 수정</span>
+
+<span class="comment"># 2. 앱에 반영</span>
+npx cap sync
+
+<span class="comment"># 3. build.gradle에서 버전 올리기</span>
+versionCode <span class="num">2</span>   <span class="comment">← 매 업로드마다 +1</span>
+
+<span class="comment"># 4. Android Studio에서 새 .aab 생성</span>
+Build → Generate Signed Bundle → Release
+
+<span class="comment"># 5. Play Console → 프로덕션 → 새 버전 → 업로드</span></code></pre>
+    </div>
+    <div class="alert info">
+      <span class="alert-icon">💡</span>
+      <span>2~4주마다 작은 업데이트를 하면 스토어 알고리즘이 활성 앱으로 인식해 노출을 늘려줍니다.</span>
+    </div>
+  </div>
+
+  <!-- 09. 수익 -->
+  <div class="section" id="s9">
+    <div class="section-head">
+      <div class="step-num">STEP 09</div>
+      <h2>수익 로드맵 <small>현실적인 예상치</small></h2>
+    </div>
+    <div class="card">
+      <div class="revenue-bars">
+        <div class="rev-row">
+          <div class="rev-label" style="font-size:12px">출시 직후</div>
+          <div class="rev-bar-wrap"><div class="rev-bar" style="width:5%;background:var(--muted)"></div></div>
+          <div class="rev-val" style="color:var(--muted)">$5~20 / 월</div>
+        </div>
+        <div class="rev-row">
+          <div class="rev-label" style="font-size:12px">1~3개월</div>
+          <div class="rev-bar-wrap"><div class="rev-bar" style="width:25%;background:var(--primary)"></div></div>
+          <div class="rev-val" style="color:var(--primary)">$100~500 / 월</div>
+        </div>
+        <div class="rev-row">
+          <div class="rev-label" style="font-size:12px">6개월+</div>
+          <div class="rev-bar-wrap"><div class="rev-bar" style="width:70%;background:var(--green)"></div></div>
+          <div class="rev-val" style="color:var(--green)">$1,000~5,000 / 월</div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:14px">* DAU 기준: 출시 직후 ~100명, 1~3개월 ~1,000명, 6개월+ ~10,000명 추정</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">AdMob 첫 정산 조건</div>
+      <table>
+        <tr><th>조건</th><th>내용</th></tr>
+        <tr><td>최소 지급 금액</td><td><strong>$100</strong> 이상 쌓여야 지급</td></tr>
+        <tr><td>정산 주기</td><td>매월 말 집계 → 다음달 21일 지급</td></tr>
+        <tr><td>지급 방법</td><td>AdSense 계정 → 은행 계좌 연결</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">수익 높이는 팁</div>
+      <ul class="checklist">
+        <li>보상형 광고 (계속하기 버튼) 위주로 → 유저 경험도 좋고 수익도 최대</li>
+        <li>전면 광고는 3판마다 (너무 자주 하면 유저 이탈)</li>
+        <li>TikTok / YouTube Shorts에 플레이 영상 올리기 → 무료 마케팅</li>
+        <li>SensorTower로 경쟁 앱 분석 → 기능 벤치마킹</li>
+        <li>Mixpanel로 어느 레벨에서 유저가 떠나는지 파악 → 밸런싱</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="guide-banner">
+    <h3>📁 함께 제공된 파일</h3>
+    <p>
+      <strong>index.html</strong> — 버그 수정된 게임 본체 &nbsp;|&nbsp;
+      <strong>capacitor.config.json</strong> — Capacitor 설정 &nbsp;|&nbsp;
+      <strong>package.json</strong> — npm 의존성<br/>
+      <strong>icon.svg</strong> — 앱 아이콘 &nbsp;|&nbsp;
+      <strong>store-description.txt</strong> — 스토어 설명문
+    </p>
+  </div>
+
+</div>
+</body>
+</html>
