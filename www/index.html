@@ -47,7 +47,7 @@
       justify-content: center;
     }
 
-    /* ── 배경 비네트 ── */
+    /* ??????  ? ?????? */
     body::before {
       content: '';
       position: fixed;
@@ -57,7 +57,7 @@
       z-index: 0;
     }
 
-    /* ── 화면 관리 ── */
+    /* ?????? ?硫? ?? ?????? */
     .screen {
       display: none;
       position: fixed;
@@ -70,9 +70,9 @@
     }
     .screen.active { display: flex; }
 
-    /* ══════════════════════════════
-       메뉴 화면
-    ══════════════════════════════ */
+    /* ??????????????????????????????
+        ?硫?
+    ?????????????????????????????? */
     #screen-menu { gap: 36px; }
 
     .logo-wrap { text-align: center; }
@@ -96,7 +96,7 @@
         0 0 60px rgba(255,45,85,0.5),
         0 0 120px rgba(255,45,85,0.15);
     }
-    /* 로고 아래 강조 선 */
+    /*  ??  ? */
     .logo-line {
       width: 48px;
       height: 2px;
@@ -139,7 +139,7 @@
       text-shadow: 0 0 24px var(--gold-dim);
     }
 
-    /* ── 버튼 ── */
+    /* ??????  ?????? */
     .btn {
       font-family: 'Orbitron', monospace;
       font-size: 13px;
@@ -174,9 +174,9 @@
     }
     .btn-ghost:active { transform: scale(0.96); opacity: 0.6; }
 
-    /* ══════════════════════════════
-       게임 화면
-    ══════════════════════════════ */
+    /* ??????????????????????????????
+        ?硫?
+    ?????????????????????????????? */
     #screen-game {
       justify-content: flex-start;
       padding-top: 0;
@@ -212,7 +212,7 @@
       line-height: 1;
       color: var(--text);
     }
-    /* 실시간 best 갭 */
+    /* ??? best ? */
     .hud-gap {
       font-family: 'Orbitron', monospace;
       font-size: 9px;
@@ -224,7 +224,7 @@
     .hud-gap.behind { color: var(--muted); }
     .hud-gap.ahead  { color: var(--gold); }
 
-    /* 생명력 */
+    /* ? */
     .hearts {
       display: flex;
       gap: 5px;
@@ -237,7 +237,7 @@
       text-shadow: 0 0 8px var(--primary);
     }
     .heart.dead { opacity: 0.1; text-shadow: none; color: var(--muted); }
-    /* 마지막 목숨 — 심장 맥박 */
+    /* ??留?  ??? ??  */
     .heart.last-pulse {
       animation: heartbeat 0.7s ease-in-out infinite;
     }
@@ -247,7 +247,7 @@
       60%       { transform: scale(1.1); }
     }
 
-    /* 게임 아레나 */
+    /*  ??? */
     .arena-wrap {
       flex: 1;
       display: flex;
@@ -326,7 +326,7 @@
       background: rgba(255,255,255,0.2);
     }
 
-    /* 하단 피드백 */
+    /* ?? ??? */
     .feedback-area {
       width: 100%;
       display: flex;
@@ -358,7 +358,7 @@
     .feedback.good    { color: var(--gold);      text-shadow: 0 0 16px var(--gold-dim); }
     .feedback.miss    { color: var(--danger);    text-shadow: 0 0 16px var(--danger-dim); }
     .feedback.early   { color: var(--muted); }
-    /* 아슬아슬 miss — 주황 */
+    /* ???? miss ???  */
     .feedback.close   { color: #FF8C00; text-shadow: 0 0 16px rgba(255,140,0,0.4); }
 
     .combo-text {
@@ -374,9 +374,9 @@
     }
     .combo-text.show { opacity: 1; }
 
-    /* ══════════════════════════════
-       결과 화면
-    ══════════════════════════════ */
+    /* ??????????????????????????????
+        ?硫?
+    ?????????????????????????????? */
     #screen-result { gap: 22px; }
 
     .result-status { text-align: center; }
@@ -432,7 +432,7 @@
       text-transform: uppercase;
     }
 
-    /* best까지 X점 배너 */
+    /* best?? X?  */
     .result-bestgap {
       font-family: 'Orbitron', monospace;
       font-size: 12px;
@@ -465,9 +465,9 @@
       width: 100%;
     }
 
-    /* ══════════════════════════════
-       배너 광고
-    ══════════════════════════════ */
+    /* ??????????????????????????????
+
+    ?????????????????????????????? */
     #ad-banner {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -487,9 +487,9 @@
       text-transform: uppercase;
     }
 
-    /* ══════════════════════════════
-       레벨업 플래시
-    ══════════════════════════════ */
+    /* ??????????????????????????????
+       ? ???
+    ?????????????????????????????? */
     .levelup-flash {
       position: fixed;
       inset: 0;
@@ -501,9 +501,9 @@
     }
     .levelup-flash.show { opacity: 1; }
 
-    /* ══════════════════════════════
-       파티클
-    ══════════════════════════════ */
+    /* ??????????????????????????????
+       ???
+    ?????????????????????????????? */
     @keyframes particle {
       0%   { transform: translate(-50%,-50%) translate(0,0) scale(1.2); opacity: 1; }
       100% { transform: translate(-50%,-50%) translate(var(--px),var(--py)) scale(0); opacity: 0; }
@@ -517,9 +517,9 @@
       animation: particle 0.55s cubic-bezier(0.1,0,0.8,1) forwards;
     }
 
-    /* ══════════════════════════════
-       흔들기
-    ══════════════════════════════ */
+    /* ??????????????????????????????
+       ???
+    ?????????????????????????????? */
     @keyframes shake {
       0%,100% { transform: translateX(0); }
       15%      { transform: translateX(-10px); }
@@ -529,9 +529,9 @@
     }
     .shaking { animation: shake 0.3s ease; }
 
-    /* ══════════════════════════════
-       점수 팝
-    ══════════════════════════════ */
+    /* ??????????????????????????????
+       ?? ?
+    ?????????????????????????????? */
     @keyframes scorepop {
       0%   { transform: scale(1.5); }
       60%  { transform: scale(0.95); }
@@ -539,9 +539,9 @@
     }
     .scorepop { animation: scorepop 0.28s cubic-bezier(0.34,1.56,0.64,1); }
 
-    /* ══════════════════════════════
-       전면 광고 오버레이
-    ══════════════════════════════ */
+    /* ??????????????????????????????
+       ?硫?  ??
+    ?????????????????????????????? */
     #ad-interstitial {
       position: fixed;
       inset: 0;
@@ -592,9 +592,9 @@
       display: none;
     }
 
-    /* ══════════════════════════════
-       위험 오버레이 (생명 1개)
-    ══════════════════════════════ */
+    /* ??????????????????????????????
+       ?? ?? (?紐? 1?)
+    ?????????????????????????????? */
     .danger-overlay {
       position: fixed;
       inset: 0;
@@ -612,9 +612,9 @@
       50%       { opacity: 0.75; }
     }
 
-    /* ══════════════════════════════
-       레벨업 텍스트 오버레이
-    ══════════════════════════════ */
+    /* ??????????????????????????????
+       ? ??? ??
+    ?????????????????????????????? */
     .levelup-text {
       position: fixed;
       top: 50%; left: 50%;
@@ -644,22 +644,22 @@
 </head>
 <body>
 
-  <!-- 레벨업 플래시 -->
+  <!-- ? ??? -->
   <div class="levelup-flash" id="levelup-flash"></div>
-  <!-- 레벨업 텍스트 -->
+  <!-- ? ??? -->
   <div class="levelup-text" id="levelup-text"></div>
-  <!-- 위험 테두리 (생명 1개) -->
+  <!-- ?? ??? (?紐? 1?) -->
   <div class="danger-overlay" id="danger-overlay"></div>
 
-  <!-- 전면 광고 오버레이 (네이티브 AdMob 없을 때 웹 폴백용) -->
+  <!-- ?硫?  ?? (???? AdMob ?? ? ? ?) -->
   <div id="ad-interstitial">
     <div class="ad-full-label">ADVERTISEMENT</div>
     <div class="ad-full-box">[ AdMob 전면 광고 ]</div>
     <div class="ad-skip-timer" id="skip-timer">5초 후 닫기 가능...</div>
-    <button class="ad-skip-btn" id="skip-btn" onclick="closeInterstitial()">닫기 ✕</button>
+    <button class="ad-skip-btn" id="skip-btn" onclick="closeInterstitial()">광고 닫기</button>
   </div>
 
-  <!-- ── 메뉴 화면 ── -->
+  <!-- ??????  ?硫? ?????? -->
   <div class="screen active" id="screen-menu">
     <div class="logo-wrap">
       <div class="logo-eyebrow">Hypercasual</div>
@@ -668,7 +668,7 @@
     </div>
 
     <div class="menu-desc">
-      줄어드는 링이 원 안에 들어올 때<br/>
+      줄어드는 링이 작은 원에 들어갈 때<br/>
       <span class="hl">초록 구간</span>에서 탭하면 PERFECT!<br/>
       콤보를 쌓아 최고 점수에 도전하세요
     </div>
@@ -681,7 +681,7 @@
     </div>
   </div>
 
-  <!-- ── 게임 화면 ── -->
+  <!-- ??????  ?硫? ?????? -->
   <div class="screen" id="screen-game">
     <div class="hud">
       <div class="hud-card">
@@ -692,9 +692,9 @@
       <div class="hud-card">
         <div class="hud-label">Lives</div>
         <div class="hearts" id="hud-lives">
-          <span class="heart">♥</span>
-          <span class="heart">♥</span>
-          <span class="heart">♥</span>
+          <span class="heart">❤</span>
+          <span class="heart">❤</span>
+          <span class="heart">❤</span>
         </div>
       </div>
       <div class="hud-card">
@@ -723,7 +723,7 @@
     </div>
   </div>
 
-  <!-- ── 결과 화면 ── -->
+  <!-- ??????  ?硫? ?????? -->
   <div class="screen" id="screen-result">
     <div class="result-status">
       <div class="result-over-label">GAME OVER</div>
@@ -766,17 +766,17 @@
     </div>
   </div>
 
-  <!-- ── 배너 광고 ── -->
+  <!-- ??????   ?????? -->
   <div id="ad-banner">
-    <!-- 실제 AdMob 배너: Capacitor AdMob 플러그인이 여기에 자동 삽입 -->
+    <!-- ?? AdMob : Capacitor AdMob ??? ? ?? ?? -->
     <div class="ad-label">Advertisement</div>
   </div>
 
   <script type="module">
 
-    /* ══════════════════════════════════════
-       오디오 엔진 (Web Audio API, 외부 파일 없음)
-    ══════════════════════════════════════ */
+    /* ??????????????????????????????????????
+       ??? ?吏? (Web Audio API, ?? ?? ??)
+    ?????????????????????????????????????? */
     let _ac = null;
     function getAC() {
       if (!_ac) _ac = new (window.AudioContext || window.webkitAudioContext)();
@@ -784,7 +784,7 @@
       return _ac;
     }
 
-    /* 단일 음 생성 */
+    /* ?? ? ?? */
     function tone(freq, type, vol, dur, delay = 0, dest = null) {
       try {
         const ctx  = getAC();
@@ -801,7 +801,7 @@
       } catch (_) {}
     }
 
-    /* ── 효과음 ── */
+    /* ?????? ? ?????? */
     const SFX = {
       perfect() {
         tone(880,  'sine',     0.28, 0.14, 0.00);
@@ -839,10 +839,10 @@
       },
     };
 
-    /* ══════════════════════════════════════
-       배경음악 엔진 (프로시저럴, 루핑)
-       — 미니멀 일렉트로닉 / 아케이드 스타일
-    ══════════════════════════════════════ */
+    /* ??????????????????????????????????????
+       ?? ?吏? (?????, )
+       ??? 硫? ??? / ???? ?????
+    ?????????????????????????????????????? */
     const BGM = (() => {
       let schedulerTimer = null;
       let nextBarTime    = 0;
@@ -850,7 +850,7 @@
       let masterGain     = null;
       let _bpm           = 132;
 
-      /* 옥타브 음계 (A minor) */
+      /* ????? ?? (A minor) */
       const NOTES = { A2:110, C3:130.8, D3:146.8, E3:164.8, G3:196, A3:220, C4:261.6, E4:329.6 };
 
       function ctx() { return getAC(); }
@@ -864,7 +864,7 @@
         return masterGain;
       }
 
-      /* 킥 드럼: 저음 사인 + 필터 */
+      /* ? ??: ???? ?? + ?? */
       function kick(t) {
         const o = ctx().createOscillator();
         const g = ctx().createGain();
@@ -877,7 +877,7 @@
         o.start(t); o.stop(t + 0.3);
       }
 
-      /* 하이햇: 노이즈 버스트 */
+      /* ???: ??利? ? */
       function hihat(t, vol = 0.18) {
         const bufSize = ctx().sampleRate * 0.04;
         const buf  = ctx().createBuffer(1, bufSize, ctx().sampleRate);
@@ -894,10 +894,10 @@
         src.start(t); src.stop(t + 0.05);
       }
 
-      /* 오픈 하이햇 */
+      /* ?? ??? */
       function openhat(t) { hihat(t, 0.3); }
 
-      /* 베이스 노트 */
+      /* ? ?? */
       function bass(freq, t, dur) {
         const o = ctx().createOscillator();
         const g = ctx().createGain();
@@ -913,7 +913,7 @@
         o.start(t); o.stop(t + dur + 0.05);
       }
 
-      /* 리드 신스 (짧은 멜로디 모티프) */
+      /*  ?? (?? ? ?) */
       function lead(freq, t, dur, vol = 0.12) {
         const o = ctx().createOscillator();
         const g = ctx().createGain();
@@ -927,7 +927,7 @@
         o.start(t); o.stop(t + dur + 0.05);
       }
 
-      /* 패드 (지속 화음) */
+      /* ?? (吏?? ??) */
       function pad(freqs, t, dur) {
         freqs.forEach(f => {
           const o = ctx().createOscillator();
@@ -942,26 +942,26 @@
         });
       }
 
-      /* ── 4박 바 패턴 구성 ─────────────────
-         바 번호(0~3)에 따라 다른 패턴을 사용.
-         2바 단위로 반복 (0,1 → 0,1 → ...)
-      ──────────────────────────────────── */
+      /* ?????? 4? ? ??  ???????????????????????????????????????????????????
+         ? (0~3)? ?? ?? ??? ??.
+         2? ???  (0,1 ? 0,1 ? ...)
+      ???????????????????????????????????????????????????????????????????????????????????????????????????????????? */
       function scheduleBar(t, barIdx) {
-        const b = 60 / _bpm;   // 1박 길이(초)
-        const s = b / 2;       // 8분음표
+        const b = 60 / _bpm;   // 1? (?)
+        const s = b / 2;       // 8?
 
         const pattern = barIdx % 2;
 
-        /* 킥: 1,3박 */
+        /* ?: 1,3? */
         kick(t);
         kick(t + b * 2);
-        /* 하이햇: 8분음표 */
+        /* ???: 8? */
         for (let i = 0; i < 8; i++) {
-          if (i === 6) openhat(t + s * i); // 3박 뒤 오픈햇
+          if (i === 6) openhat(t + s * i); // 3? ? ???
           else         hihat(t + s * i);
         }
 
-        /* 베이스라인 (A minor 기반, 두 패턴 교대) */
+        /* ??? (A minor , ? ?? ??) */
         if (pattern === 0) {
           bass(NOTES.A2, t,          b * 1.9);
           bass(NOTES.E3, t + b * 2,  b * 0.9);
@@ -972,7 +972,7 @@
           bass(NOTES.D3, t + b * 2,  b * 1.9);
         }
 
-        /* 리드 멜로디 (4바 단위로 등장) */
+        /*  ? (4? ??? ??) */
         if (barIdx % 4 === 0) {
           lead(NOTES.A3, t,          s * 0.9);
           lead(NOTES.C4, t + s,      s * 0.9);
@@ -983,14 +983,14 @@
           lead(NOTES.E3, t + s * 5,  b * 1.9);
         }
 
-        /* 패드 (짝수 바마다 Am 화음) */
+        /* ?? ( ? Am ??) */
         if (pattern === 0) {
           pad([NOTES.A2 * 2, NOTES.C3 * 2, NOTES.E3 * 2], t, b * 4);
         }
       }
 
-      /* 스케줄러: 100ms 앞을 미리 예약 */
-      const LOOKAHEAD = 0.12; // 초
+      /* ??: 100ms ??  ?? */
+      const LOOKAHEAD = 0.12; // ?
       function schedule() {
         while (nextBarTime < ctx().currentTime + LOOKAHEAD) {
           scheduleBar(nextBarTime, barCount);
@@ -1018,31 +1018,31 @@
         },
         setTempo(bpm) { _bpm = bpm; },
         setBpm(level) {
-          /* 레벨이 올라갈수록 템포 증가: 132 → 최대 168 */
+          /* ? ??? ?? ??: 132 ? ?? 168 */
           _bpm = Math.min(168, 132 + (level - 1) * 3);
         },
       };
     })();
 
-    /* ══════════════════════════════════════
-       고정 설정
-    ══════════════════════════════════════ */
+    /* ??????????????????????????????????????
+        ??
+    ?????????????????????????????????????? */
     const C = {
       maxLives:     3,
       tapsPerLevel: 5,
-      baseSpeed:    2200,   // ms, 레벨 1 기준
-      speedDecay:   0.90,   // 레벨마다 속도 10% 증가
+      baseSpeed:    2200,   // ms, ?? 1 ??
+      speedDecay:   0.90,   // ?? ?? 10% ??
       pts: { perfect: 100, good: 50 },
       combo: [{ n: 5, x: 3 }, { n: 3, x: 2 }],
       adEvery: 3,
     };
 
-    /* 레벨별 동적 설정
-       - targetR      : 타깃 반지름 (작을수록 어려움)
-       - perfectThresh: PERFECT 판정 오차 허용 범위 (작을수록 좁음)
-       - goodThresh   : GOOD 판정 오차 허용 범위
-       - fakeoutChance: 이번 링에 페이크 멈춤 적용 확률 (0~1)
-       - ringStart    : 링이 시작하는 크기 (레벨 8+: 랜덤화) */
+    /* ? ?? ??
+       - targetR      : ???? ??? (???? ?????)
+       - perfectThresh: PERFECT ?? ?李? ??  (???? )
+       - goodThresh   : GOOD ?? ?李? ?? 
+       - fakeoutChance: ??  ???  ?? ?? (0~1)
+       - ringStart    :  ???? ?? (?? 8+: ???) */
     function getLevelCfg(level) {
       const tier = Math.floor((level - 1) / 3);
       return {
@@ -1054,34 +1054,34 @@
       };
     }
 
-    /* ══════════════════════════════════════
-       상태
-    ══════════════════════════════════════ */
+    /* ??????????????????????????????????????
+       ??
+    ?????????????????????????????????????? */
     let S = {};
     let raf = null, t0 = null, spd = 0;
-    let LC  = {};            // 현재 링의 레벨 설정
+    let LC  = {};            // ??  ?? ??
     let fakeoutState = null; // { frozenSize, start, pauseEnd }
-    let fakeoutAt    = -1;   // 페이크 발동 progress 지점 (-1 = 없음)
+    let fakeoutAt    = -1;   // ???  progress 吏?? (-1 = ??)
     let deathCount = 0;
     let tapBlocked = false;
     let fallbackAdShowing = false;
 
-    /* ══════════════════════════════════════
+    /* ??????????????????????????????????????
        AdMob
-    ══════════════════════════════════════ */
+    ?????????????????????????????????????? */
     async function initAdMob() {
       try {
         const { AdMob } = await import('@capacitor-community/admob');
         window._admob = AdMob;
         await AdMob.initialize();
         await AdMob.showBanner({
-          adId: 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX',
+          adId: 'ca-app-pub-7019972761461908/3904820752',
           adSize: 'BANNER', position: 'BOTTOM_CENTER', margin: 0,
         });
         await AdMob.prepareInterstitial({
-          adId: 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX',
+          adId: 'ca-app-pub-7019972761461908/9616312432',
         });
-      } catch { /* 웹 환경 무시 */ }
+      } catch { /* ? ??  */ }
     }
 
     async function showInterstitialAd() {
@@ -1089,7 +1089,7 @@
         try {
           await window._admob.showInterstitial();
           await window._admob.prepareInterstitial({
-            adId: 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX',
+            adId: 'ca-app-pub-7019972761461908/9616312432',
           });
         } catch { showFallbackAd(); }
       } else {
@@ -1127,9 +1127,9 @@
       showScreen('screen-result');
     };
 
-    /* ══════════════════════════════════════
-       게임 시작
-    ══════════════════════════════════════ */
+    /* ??????????????????????????????????????
+        ??
+    ?????????????????????????????????????? */
     function startGame() {
       S = {
         score: 0, lives: C.maxLives, level: 1,
@@ -1148,9 +1148,9 @@
       setTimeout(launchRing, 380);
     }
 
-    /* ══════════════════════════════════════
-       링 발사
-    ══════════════════════════════════════ */
+    /* ??????????????????????????????????????
+       留? 
+    ?????????????????????????????????????? */
     function launchRing() {
       if (!S.active) return;
       LC  = getLevelCfg(S.level);
@@ -1158,7 +1158,7 @@
       t0  = performance.now();
       tapBlocked   = false;
       fakeoutState = null;
-      // 페이크: 발동 여부를 발사 시점에 결정, prog 30~65% 사이 랜덤 지점
+      // ???:  ???  ??? , prog 30~65% ?? ?? 吏??
       fakeoutAt = Math.random() < LC.fakeoutChance
         ? 0.30 + Math.random() * 0.35
         : -1;
@@ -1167,18 +1167,18 @@
       tick();
     }
 
-    /* ══════════════════════════════════════
-       애니메이션 루프
-    ══════════════════════════════════════ */
+    /* ??????????????????????????????????????
+       ??? 
+    ?????????????????????????????????????? */
     function tick() {
       if (!S.active) return;
       const now  = performance.now();
       const ring = document.getElementById('ring');
 
-      /* 페이크 멈춤 진행 중 */
+      /* ???   ? */
       if (fakeoutState) {
         const elapsed = now - fakeoutState.start;
-        // 링이 살짝 숨쉬듯 흔들림
+        //  ?吏? ??? ???
         const wobble = Math.sin(elapsed * 0.016) * 3.5;
         const sz = fakeoutState.frozenSize + wobble;
         ring.style.width  = sz + 'px';
@@ -1186,7 +1186,7 @@
         if (now < fakeoutState.pauseEnd) {
           raf = requestAnimationFrame(tick); return;
         }
-        // 멈춘 시간만큼 t0 보정 후 재개
+        //  ?? t0  ? ??
         t0 += (now - fakeoutState.start);
         fakeoutState = null;
       }
@@ -1196,7 +1196,7 @@
       ring.style.width  = size + 'px';
       ring.style.height = size + 'px';
 
-      /* 페이크 발동 체크 */
+      /* ???   */
       if (fakeoutAt > 0 && prog >= fakeoutAt) {
         fakeoutAt    = -1;
         fakeoutState = {
@@ -1215,9 +1215,9 @@
       else { if (!tapBlocked) processMiss('MISS'); }
     }
 
-    /* ══════════════════════════════════════
-       탭 처리
-    ══════════════════════════════════════ */
+    /* ??????????????????????????????????????
+       ? 
+    ?????????????????????????????????????? */
     function onTap() {
       if (!S.active || tapBlocked) return;
       const ring = document.getElementById('ring');
@@ -1227,13 +1227,13 @@
       if (diff <= LC.perfectThresh)                processHit('PERFECT', C.pts.perfect);
       else if (diff <= LC.goodThresh)              processHit('GOOD',    C.pts.good);
       else if (size > LC.targetR + 60)             showEarlyMiss();
-      else if (diff <= LC.goodThresh + 20)         processClose();   // 아슬아슬 MISS
+      else if (diff <= LC.goodThresh + 20)         processClose();   // ???? MISS
       else                                         processMiss('MISS');
     }
     window.onTap = onTap;
     window.startGame = startGame;
 
-    /* ── 초기화 ── */
+    /* ?????? ? ?????? */
     (async () => {
       document.getElementById('best-score').textContent = localStorage.getItem('best') || '0';
       LC = getLevelCfg(1);
@@ -1250,16 +1250,16 @@
       document.addEventListener('keydown', e => {
         if (e.code === 'Space') { e.preventDefault(); onTap(); }
       });
-      /* PLAY 버튼 최초 클릭 시 AudioContext unlock + BGM 시작 */
+      /* PLAY   ?? ? AudioContext unlock + BGM ?? */
       document.getElementById('screen-menu').addEventListener('click', () => {
         getAC(); // unlock
       }, { once: true });
       await initAdMob();
     })();
 
-    /* ══════════════════════════════════════
-       성공
-    ══════════════════════════════════════ */
+    /* ??????????????????????????????????????
+       ??
+    ?????????????????????????????????????? */
     function processHit(type, base) {
       if (raf) cancelAnimationFrame(raf);
       tapBlocked = true;
@@ -1271,7 +1271,7 @@
 
       const mult  = getMultiplier();
       S.score    += base * mult;
-      const label = type + (mult > 1 ? ' ×' + mult : '');
+      const label = type + (mult > 1 ? ' ' + mult : '');
 
       type === 'PERFECT' ? SFX.perfect() : SFX.good();
       if (S.combo >= 3) SFX.combo(S.combo);
@@ -1284,7 +1284,7 @@
       if (S.tapCount >= C.tapsPerLevel) {
         S.level++;
         S.tapCount = 0;
-        BGM.setBpm(S.level);   // 레벨업마다 BGM 가속
+        BGM.setBpm(S.level);   // ? BGM ??
         SFX.levelUp();
         flashLevelUp();
         showLevelUpBanner(S.level);
@@ -1294,9 +1294,9 @@
       setTimeout(launchRing, 480);
     }
 
-    /* ══════════════════════════════════════
-       실패
-    ══════════════════════════════════════ */
+    /* ??????????????????????????????????????
+       ??
+    ?????????????????????????????????????? */
     function processMiss(label) {
       if (raf) cancelAnimationFrame(raf);
       tapBlocked = true;
@@ -1321,7 +1321,7 @@
       }
     }
 
-    /* ── 아슬아슬 MISS (GOOD 구간 바로 직전) ── */
+    /* ?????? ???? MISS (GOOD   ) ?????? */
     function processClose() {
       if (raf) cancelAnimationFrame(raf);
       tapBlocked = true;
@@ -1330,7 +1330,7 @@
       S.lives--;
       refreshLives();
       SFX.close();
-      showFeedbackText('CLOSE!', 'close');   // 주황색 텍스트
+      showFeedbackText('CLOSE!', 'close');   // ? ???
       showCombo(0);
       shakeScreen();
       setDanger(S.lives === 1);
@@ -1346,7 +1346,7 @@
       }
     }
 
-    /* ── 너무 이른 탭 ── */
+    /* ?????? ?? ?? ? ?????? */
     function showEarlyMiss() {
       if (raf) cancelAnimationFrame(raf);
       tapBlocked = true;
@@ -1355,9 +1355,9 @@
       setTimeout(launchRing, 560);
     }
 
-    /* ══════════════════════════════════════
-       게임 오버
-    ══════════════════════════════════════ */
+    /* ??????????????????????????????????????
+        ??
+    ?????????????????????????????????????? */
     async function triggerGameOver() {
       setDanger(false);
       const prev   = parseInt(localStorage.getItem('best') || '0');
@@ -1380,7 +1380,7 @@
       document.getElementById('new-best').style.display    = isNew ? 'block' : 'none';
       document.getElementById('best-score').textContent    = Math.max(S.score, prev);
 
-      /* best 갭 배너 */
+      /* best ?  */
       const gapEl = document.getElementById('result-bestgap');
       if (isNew) {
         gapEl.innerHTML = '';
@@ -1397,9 +1397,9 @@
       showScreen('screen-result');
     }
 
-    /* ══════════════════════════════════════
-       헬퍼
-    ══════════════════════════════════════ */
+    /* ??????????????????????????????????????
+       ??
+    ?????????????????????????????????????? */
     function getMultiplier() {
       for (const { n, x } of C.combo) if (S.combo >= n) return x;
       return 1;
@@ -1408,7 +1408,7 @@
     function refreshHUD() {
       document.getElementById('hud-score').textContent = S.score;
       document.getElementById('hud-level').textContent = S.level;
-      /* 실시간 best 갭 표시 */
+      /* ??? best ? ?? */
       const best   = parseInt(localStorage.getItem('best') || '0');
       const gapEl  = document.getElementById('hud-gap');
       if (best > 0) {
@@ -1428,7 +1428,7 @@
     function refreshLives() {
       document.querySelectorAll('#hud-lives .heart').forEach((h, i) => {
         h.classList.toggle('dead', i >= S.lives);
-        /* 남은 마지막 목숨만 심장박동 */
+        /* ???? ??留? 留? ?? */
         h.classList.toggle('last-pulse', S.lives === 1 && i === 0);
       });
     }
@@ -1498,7 +1498,7 @@
       }, 900);
     }
 
-    /* 파티클 */
+    /* ??? */
     function spawnParticles() {
       const arena  = document.getElementById('arena');
       const colors = ['#FF2D55','#FFD000','#39FF6E','#FF6B35','#FFFDF5','#FFD000'];
@@ -1515,7 +1515,7 @@
       }
     }
 
-    /* 판정 구간 시각화 (레벨마다 갱신) */
+    /* ??  ? (?? ) */
     function updateZones() {
       const g  = document.getElementById('zone-good');
       const p  = document.getElementById('zone-perfect');
