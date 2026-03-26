@@ -9,11 +9,23 @@
     "build": "npx cap sync && npx cap open android"
   },
   "dependencies": {
-    "@capacitor/android": "^6.0.0",
-    "@capacitor/core": "^6.0.0",
-    "@capacitor-community/admob": "^6.0.0"
+    "@capacitor-community/admob": "^6.0.0",
+    "@capacitor/android": "^6.2.1",
+    "@capacitor/core": "^6.2.1"
   },
   "devDependencies": {
-    "@capacitor/cli": "^6.0.0"
-  }
+    "@capacitor/cli": "^6.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alswn8268/game-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/alswn8268/game-app/issues"
+  },
+  "homepage": "https://github.com/alswn8268/game-app#readme"
 }
